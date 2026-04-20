@@ -73,6 +73,11 @@ def trigger_cve_check(api_key: str = Depends(verify_audit_key)):
 def read_root():
     return {"status": "The Mustang Sage API is online."}
 
+@app.get("/health", tags=["System"])
+def health_check():
+    """Endpoint explicitly for Docker container healthchecks."""
+    return {"status": "healthy"}
+
 @app.post("/api/messages")
 async def messages(req: Request) -> Response:
     """Main endpoint for Microsoft Teams Bot Framework"""
