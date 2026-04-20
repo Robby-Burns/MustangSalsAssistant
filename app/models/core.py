@@ -49,7 +49,7 @@ class QuoteDraft(BaseModel):
 
 class CommDraft(BaseModel):
     Draft_ID: str
-    Draft_Type: Literal["follow_up_email", "intro_email", "vector_request", "design_brief"]
+    Draft_Type: Literal["follow_up_email", "intro_email", "vector_request", "design_brief", "install_schedule"]
     Grounded_To: str
     Subject: str
     Body: str

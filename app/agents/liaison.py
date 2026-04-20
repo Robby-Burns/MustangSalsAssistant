@@ -18,4 +18,20 @@ def liaison_node(state: Any):
     response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=f"Lead ID: {state.lead_id}")])
     logger.info(f"Liaison LLM: {response.content}")
     
-    return {"address_verified": is_verified}
+    # Evaluate communication intent based on string matching
+    intent = ""
+    feedback = state.current_human_feedback if hasattr(state, "current_human_feedback") else state.get("current_human_feedback")
+    if feedback:
+        feed_lower = feedback.lower()
+        if "intro" in feed_lower:
+            intent = "intro_email"
+        elif "vector" in feed_lower or "logo" in feed_lower:
+            intent = "vector_request"
+        elif "schedule" in feed_lower or "install" in feed_lower:
+            intent = "install_schedule"
+        elif "brief" in feed_lower:
+            intent = "design_brief"
+        elif "follow" in feed_lower or "nudge" in feed_lower:
+            intent = "follow_up_email"
+            
+    return {"address_verified": is_verified, "current_intent": intent}

@@ -36,6 +36,7 @@ class SageState(BaseModel):
     
     comm_draft: Optional[CommDraft] = None
     current_human_feedback: Optional[str] = None
+    current_intent: str = Field(default="")
     
 import os
 import yaml
@@ -61,9 +62,26 @@ else:
     
 # 5. The Communicator (Comm Mode)
 def comm_node(state: SageState):
-    logger.info("COMM MODE: Generating Draft outputs.")
-    draft = CommFactory.process_comm_intent(state.lead_id, "email", "Follow up regarding site survey.")
-    logger.info(f"Generated {draft['Draft_Type']} with subject: {draft['Subject']}")
+    logger.info(f"COMM MODE: Generating Draft outputs for intent: {state.current_intent}")
+    intent_type = state.current_intent if hasattr(state, "current_intent") and state.current_intent else "follow_up_email"
+    # Safely extract compliance dict for Jinja templates
+    cmp_dict = {}
+    if state.compliance_rules:
+        cmp_dict = state.compliance_rules[0].model_dump()
+    else:
+        cmp_dict = {"Max_Sq_Ft": 150, "Height_Limit_Ft": 30, "Illumination_Notes": "Mocked rules"}
+
+    draft = CommFactory.process_comm_intent(
+        state.lead_id, 
+        intent_type, 
+        {
+            "contact_name": "Client", 
+            "project_type": "Signage", 
+            "lead_id": state.lead_id, 
+            "compliance": cmp_dict
+        }
+    )
+    logger.info(f"Generated {draft.Draft_Type} with subject: {draft.Subject}")
     return {"comm_draft": draft}
 
 # 6. Human-in-the-loop Bridge

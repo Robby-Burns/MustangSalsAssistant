@@ -39,7 +39,7 @@ class CommFactory:
                 Status="draft"
             )
             
-        elif intent_type == "follow_up":
+        elif intent_type == "follow_up_email":
             if os.path.exists(os.path.join(TEMPLATE_DIR, "follow_up.j2")):
                 template = env.get_template("follow_up.j2")
                 body = template.render(**context)
@@ -51,6 +51,57 @@ class CommFactory:
                 Draft_Type="follow_up_email",
                 Grounded_To=lead_id,
                 Subject=f"Following Up on Your Quote [{lead_id}]",
+                Body=body,
+                Review_Required=True,
+                Status="draft"
+            )
+        
+        elif intent_type == "intro_email":
+            if os.path.exists(os.path.join(TEMPLATE_DIR, "intro_email.j2")):
+                template = env.get_template("intro_email.j2")
+                body = template.render(**context)
+            else:
+                body = f"Mocked Intro Email for Lead {lead_id}\nContext: {context}"
+                
+            return CommDraft(
+                Draft_ID=draft_id,
+                Draft_Type="intro_email",
+                Grounded_To=lead_id,
+                Subject=f"Welcome to Mustang Signs! [{lead_id}]",
+                Body=body,
+                Review_Required=True,
+                Status="draft"
+            )
+            
+        elif intent_type == "vector_request":
+            if os.path.exists(os.path.join(TEMPLATE_DIR, "vector_request.j2")):
+                template = env.get_template("vector_request.j2")
+                body = template.render(**context)
+            else:
+                body = f"Mocked Vector Request for Lead {lead_id}\nContext: {context}"
+                
+            return CommDraft(
+                Draft_ID=draft_id,
+                Draft_Type="vector_request",
+                Grounded_To=lead_id,
+                Subject=f"Artwork Request for Your Signage Project [{lead_id}]",
+                Body=body,
+                Review_Required=True,
+                Status="draft"
+            )
+            
+        elif intent_type == "install_schedule":
+            if os.path.exists(os.path.join(TEMPLATE_DIR, "install_schedule.j2")):
+                template = env.get_template("install_schedule.j2")
+                body = template.render(**context)
+            else:
+                body = f"Mocked Install Schedule for Lead {lead_id}\nContext: {context}"
+                
+            return CommDraft(
+                Draft_ID=draft_id,
+                Draft_Type="install_schedule",
+                Grounded_To=lead_id,
+                Subject=f"Scheduling Your Sign Installation [{lead_id}]",
                 Body=body,
                 Review_Required=True,
                 Status="draft"
