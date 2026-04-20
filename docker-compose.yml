@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./app:/app
+      - .:/app
       - chromadata:/app/chroma_db
     environment:
       - PYTHONUNBUFFERED=1
@@ -48,9 +48,8 @@ services:
     build: .
     container_name: mustang_whisper_scheduler
     volumes:
-      - ./app:/app
-      - ./scripts:/scripts
-    working_dir: /
+      - .:/app
+    working_dir: /app
     command: ["uv", "run", "python", "scripts/run_scheduler.py"]
     depends_on:
       - mustang-whisper
