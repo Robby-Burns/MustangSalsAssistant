@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mustang-whisper:
+    build: .
+    container_name: mustang_whisper_api
+    ports:
+      - "8000:8000"
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - chromadata:/app/chroma_db
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - db
+      - jaeger
+
+  db:
+    image: postgres:15-alpine
+    container_name: mustang_whisper_db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-mustang_whisper}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: mustang_whisper_redis
+    ports:
+      - "6379:6379"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: mustang_whisper_jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+
+  scheduler:
+    build: .
+    container_name: mustang_whisper_scheduler
+    volumes:
+      - ./app:/app
+      - ./scripts:/scripts
+    working_dir: /
+    command: ["uv", "run", "python", "scripts/run_scheduler.py"]
+    depends_on:
+      - mustang-whisper
+      - db
+    restart: unless-stopped
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
+  chromadata:
