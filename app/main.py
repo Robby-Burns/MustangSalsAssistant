@@ -110,6 +110,29 @@ async def messages(req: Request) -> Response:
 
     return Response(status_code=status.HTTP_200_OK)
 
+from pydantic import BaseModel
+
+class NudgeRequest(BaseModel):
+    quote_id: str
+
+@app.post("/teams/nudge", tags=["UI Integration"])
+def trigger_teams_nudge(payload: NudgeRequest):
+    """
+    Endpoint triggered by the background scheduler to fire off follow-up nudges.
+    In Phase 2, this will route the nudge directly into the Liaison node.
+    """
+    graph_config = {"configurable": {"thread_id": f"nudge-{payload.quote_id}"}}
+    
+    # We simulate a "follow_up_email" human intent trigger to leverage Phase 2 Comm Engine!
+    sage_graph.invoke(
+        {
+            "lead_id": payload.quote_id, 
+            "current_human_feedback": "send follow-up"
+        }, 
+        graph_config
+    )
+    return {"status": "nudge dispatched", "quote_id": payload.quote_id}
+
 @app.post("/teams/card", tags=["UI Integration"])
 def generate_teams_card(quote_data: dict):
     """
