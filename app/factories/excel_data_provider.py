@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class ExcelDataProvider:
     """
-    A robust provider for reading and writing compliance data to a local Excel file.
-    Implements a full read-modify-write cycle to ensure atomic updates.
+    A robust provider for reading and writing compliance data to a central Excel file
+    stored on a shared network drive.
     """
 
     @staticmethod
@@ -17,9 +17,13 @@ class ExcelDataProvider:
 
     @staticmethod
     def pre_flight_check():
-        """Verifies that the configured Excel file exists before any operation."""
+        """
+        Verifies that the configured Excel file exists and is accessible.
+        This is a critical check to prevent silent failures.
+        """
         path = ExcelDataProvider._get_file_path()
         if not os.path.exists(path):
+            logger.error(f"CRITICAL: The compliance Excel file was not found at the configured path: {path}")
             raise FileNotFoundError(f"The configured Excel file does not exist at: {path}")
         logger.info("Excel file pre-flight check passed.")
 
@@ -29,7 +33,6 @@ class ExcelDataProvider:
         path = ExcelDataProvider._get_file_path()
         try:
             df = pd.read_excel(path, sheet_name="ComplianceData")
-            # Ensure a unique 'row_id' if it doesn't exist
             if 'row_id' not in df.columns:
                 df['row_id'] = range(2, len(df) + 2)
             return df.to_dict('records')
@@ -39,10 +42,7 @@ class ExcelDataProvider:
 
     @staticmethod
     def update_rows(updates: list):
-        """
-        Atomically updates multiple rows in the Excel file.
-        'updates' is a list of tuples: (row_id, data_dictionary_to_update)
-        """
+        """Atomically updates multiple rows in the Excel file."""
         path = ExcelDataProvider._get_file_path()
         try:
             df = pd.read_excel(path, sheet_name="ComplianceData")
@@ -54,12 +54,11 @@ class ExcelDataProvider:
             for row_id, data in updates:
                 for key, value in data.items():
                     if key not in df.columns:
-                        df[key] = None  # Add the column if it doesn't exist
+                        df[key] = None
                     df.loc[row_id, key] = value
             
             df.reset_index(inplace=True)
             
-            # Write the entire updated DataFrame back to the file
             with pd.ExcelWriter(path, engine='openpyxl') as writer:
                 df.to_excel(writer, sheet_name='ComplianceData', index=False)
 

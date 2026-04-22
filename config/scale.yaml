@@ -11,8 +11,10 @@ governance:
   technical_contact_email: "dev-alerts@example.com"
 
 compliance_source:
-  # The network file path to the compliance data Excel file.
-  # e.g., /path/to/shared/drive/compliance_data.xlsx
+  # For local testing, this path points to the file inside the project directory.
+  # This works because of the volume mount in docker-compose.yml.
+  # For production, you would change this to the absolute path of the
+  # file on your shared network drive (e.g., "/mnt/shared/compliance_data.xlsx").
   excel_file_path: "config/compliance_sources/compliance_data.xlsx"
 
 context_management:
@@ -38,8 +40,8 @@ database:
   type: "vector"
   vector_store:
     provider: "chroma"
-    chroma_persist_directory: "/app/chroma_db"
     collection_name: "project_recipes"
+    chroma_persist_directory: "/app/chroma_db"
 
 audit:
   schedule_interval_months: 6

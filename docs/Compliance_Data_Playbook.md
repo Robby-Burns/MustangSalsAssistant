@@ -1,51 +1,55 @@
-# Playbook: Managing Compliance Data
+# Playbook: How to Update Compliance Data
 
-**Version:** 2.0
-**Last Updated:** 2026-04-21
+**Version:** 3.0
+**Last Updated:** 2026-04-22
 
-This document outlines the process for managing the municipal sign code data used by the Mustang Sage application.
+This guide explains how to update the municipal sign code data used by the Mustang Sage bot.
 
-## 1. Overview
+## 1. Your Tool: The Central Excel File
 
-The application's compliance knowledge is sourced from a central Excel file stored on a shared network drive. This allows for easy and reliable updates by non-technical experts.
+All compliance data is managed in a single Excel file stored on the company's shared network drive. This is the **single source of truth**.
 
-The system uses two automated scripts:
-- A **Change Detection Script** runs weekly to monitor official city websites for changes and flag them for review within the Excel file.
-- A **Compliance Ingestion Script** runs nightly to synchronize the verified data from the Excel file into the application's database.
+-   **File Location:** The exact location of this file is configured by your IT team. Please ask your manager for the shortcut to the `compliance_data.xlsx` file.
+-   **Your Role:** As the **Compliance Data Owner**, your responsibility is to keep the content of this file accurate and up-to-date.
 
-## 2. Configuration
+## 2. The Update Process: A Simple Checklist
 
-- **File Path:** The location of the master Excel file is configured in `config/scale.yaml` under `compliance_source.excel_file_path`. This path **must** be accessible from the server where the scripts are run.
-- **Roles:** The `Compliance Data Owner` and `Technical Contact` are defined in `config/scale.yaml` under the `governance` section.
+Follow these steps to update the compliance data.
 
-## 3. The Update Workflow
+### ✅ Step 1: Check for Automated Suggestions
 
-### Step 1: Reviewing Suggested Changes
+The system has a "watchdog" that automatically checks the city websites for any text changes.
 
-1.  The automated **Change Detection Script** monitors the city websites listed in the Excel file.
-2.  If a change is detected, it will update the **`Suggested Change?`** column to `"Yes - Review Needed"` and populate the **`Before Text`** and **`After Text`** columns.
-3.  The **Compliance Data Owner** should periodically open the Excel file to check for any rows flagged for review.
+1.  Open the `compliance_data.xlsx` file from the shared drive.
+2.  Look at the **`Suggested Change?`** column.
+3.  If you see any rows marked **"Yes - Review Needed"**, it means the system has detected a change on the official website for that rule.
 
-### Step 2: Verifying and Updating the Data
+### ✅ Step 2: Review and Verify the Change
 
-1.  For each flagged row, compare the `Before Text` and `After Text` columns.
-2.  Visit the official `Source URL` to verify the change in its original context.
-3.  Copy the new, correct, and exact legal text and paste it into the **`Full Text`** cell. Update other relevant cells like `Key Constraints` as needed.
-4.  Change the `Suggested Change?` value back to `"No"`.
-5.  Save the Excel file.
+For each row that needs a review:
 
-### Step 3: Automated Synchronization
+1.  The **`Before Text`** and **`After Text`** columns will show you what the system found. Compare these two columns to see what was added or removed.
+2.  Go to the official website using the link in the **`Source URL`** column to see the change in its official context.
+3.  Use your expert judgment to decide if the change is relevant and needs to be incorporated.
 
-1.  The automated **Compliance Ingestion Script** runs every night.
-2.  It reads the content from the configured Excel file.
-3.  After processing a row, it will update the **`Sync Status`** column in the Excel file with a timestamp (e.g., `✅ Synced on ...`).
+### ✅ Step 3: Update the Official Text
 
-## 4. Error Handling
+1.  If the change is important, copy the new, correct, and exact legal text from the city's website.
+2.  Paste this text into the **`Full Text`** cell for that row.
+3.  Update the **`Key Constraints`** cell with a short, simple summary of the main rules (e.g., "Max Height: 12ft").
+4.  Once you are finished, change the value in the **`Suggested Change?`** column from "Yes - Review Needed" back to **"No"**.
+5.  **Save the Excel file.**
 
--   If you see an error in the **`Sync Status`** column (e.g., `❌ ERROR: ...`), please check the formatting of your recent changes. If the error persists, contact the **Technical Contact**.
--   If the `Sync Status` timestamps appear to be more than 24 hours old, the **Technical Contact** will have already received an automated email alert and will be investigating.
--   If the Excel file is moved or renamed, the scripts will fail and send an alert to the **Technical Contact**.
+### ✅ Step 4: Let the System Do the Rest
 
-## 5. Backups
+You are done. The system will take care of the rest automatically.
 
-The master Excel file should be backed up regularly as part of your organization's standard file backup procedures for shared network drives.
+-   Overnight, an automated script will read your changes from the Excel file and update the bot's knowledge base.
+-   The next morning, you can check the **`Sync Status`** column. It will be updated with a timestamp (e.g., `✅ Synced on...`) to confirm your changes are live.
+
+## 3. What to Do If You See an Error
+
+-   **If you see an `❌ ERROR` message in the `Sync Status` column:** This means there might be a formatting issue with the text you entered. Please double-check your work. If you can't find the problem, contact the **Technical Contact** for assistance.
+-   **If the file is missing or you can't access it:** Contact the **Technical Contact** immediately.
+
+*(To find the current Technical Contact, please ask your manager or refer to the project's internal configuration documents.)*

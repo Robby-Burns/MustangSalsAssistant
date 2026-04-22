@@ -37,9 +37,9 @@ class LLMConfig(BaseModel):
     embedder: EmbedderConfig
 
 class VectorStoreConfig(BaseModel):
-    provider: str = Field(default="neon")
-    chroma_persist_directory: str = Field(default="/app/chroma_db")
+    provider: str = Field(default="chroma")
     collection_name: str = Field(default="project_recipes")
+    chroma_persist_directory: str = Field(default="/app/chroma_db")
     
     def get_chroma_path(self) -> str:
         if os.path.exists(self.chroma_persist_directory) or self.chroma_persist_directory.startswith("/app"):
