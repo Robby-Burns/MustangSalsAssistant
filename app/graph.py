@@ -9,7 +9,7 @@ from app.factories.llm_factory import get_llm_provider
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.factories.geo_logistics_factory import GeoLogisticsFactory
 from app.skills.distance_calculator import DistanceCalculator
-from app.factories.comm_factory import CommFactory
+from app.factories.comm_template_engine import CommTemplateEngine
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ def comm_node(state: SageState):
     else:
         cmp_dict = {"Max_Sq_Ft": 150, "Height_Limit_Ft": 30, "Illumination_Notes": "Mocked rules"}
 
-    draft = CommFactory.process_comm_intent(
+    draft = CommTemplateEngine.process_comm_intent(
         state.lead_id, 
         intent_type, 
         {
@@ -92,7 +92,7 @@ def human_bridge_node(state: SageState):
 # Gatekeeper router
 def check_human_approval(state: SageState):
     """Routes based on whether humanity approved the draft."""
-    feedback = state.current_human_feedback if hasattr(state, "current_human_feedback") else state.get("current_human_feedback")
+    feedback = state.current_human_feedback
     if feedback == "approve":
         return "approved"
     return "reviewing"

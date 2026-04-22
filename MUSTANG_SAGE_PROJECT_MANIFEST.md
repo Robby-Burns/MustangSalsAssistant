@@ -133,7 +133,7 @@ project-root/
 │       ├── shopvox_factory.py
 │       ├── s3_vector_factory.py
 │       ├── geo_logistics_factory.py
-│       └── comm_factory.py
+│       └── comm_template_engine.py
 │
 ├── tests/
 │   ├── test_liaison_agent.py

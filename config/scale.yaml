@@ -1,0 +1,63 @@
+# ===================================================================
+# Mustang Sage - System Scale & Configuration
+#
+# This file controls the operational parameters of the Mustang Sage agents,
+# including LLM providers, database connections, and feature flags.
+#
+# How to use:
+# - To swap providers, change the 'provider' fields (e.g., "google" to "openai").
+# - To enable/disable agents, toggle 'enable_new_agents'.
+# - Ensure environment variables (e.g., OPENAI_API_KEY) are set for the chosen providers.
+#
+# See docs/framework/07_CONFIGURATION_CONTROL.md for full details.
+# ===================================================================
+
+context_management:
+  max_history_messages: 10
+  truncation_strategy: "middle"
+  rag_top_k_results: 3
+  archive_threshold_lines: 500
+  archive_threshold_age_days: 14
+
+orchestration:
+  engine: "langgraph"
+  max_steps: 10
+  # Feature flag to enable/disable the core agent workflow.
+  # Set to 'false' to use hollowed-out mock agents for UI/endpoint testing.
+  enable_new_agents: true
+
+llm:
+  primary:
+    # Supported LLM providers for primary reasoning tasks.
+    # Options: "google", "openai"
+    provider: "google"
+    # The specific model to use for the chosen provider.
+    model: "gemini-1.5-flash"
+  embedder:
+    # Supported providers for generating text embeddings.
+    # Options: "google", "openai"
+    provider: "google"
+
+database:
+  type: "vector"
+  vector_store:
+    # Supported vector database providers for RAG.
+    # Options: "chroma", "neon" (for pgvector), "s3" (placeholder)
+    provider: "chroma"
+    # Directory for local ChromaDB persistence. Ignored by other providers.
+    chroma_persist_directory: "/app/chroma_db"
+    # The name of the collection/table to use for project recipes.
+    collection_name: "project_recipes"
+
+audit:
+  schedule_interval_months: 6
+  schedule_day: "1"
+  schedule_time: "02:00"
+  schedule_timezone: "UTC"
+  # Channel for audit notifications.
+  # Options: "none", "slack", "teams", "webhook"
+  notification_channel: "none"
+  notification_link: ""
+  # FORBIDDEN: This must always be false. Human sign-off is mandatory.
+  auto_apply: false
+  cve_check_weekly: true

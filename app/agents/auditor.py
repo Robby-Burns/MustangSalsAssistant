@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 def auditor_node(state: Any):
     logger.info("AUDITOR: Verifying compliance logic visually via RAG array payload.")
     
-    address = getattr(state, "address_input", "Unknown") if hasattr(state, "address_input") else (state.get("address_input", "Unknown") if isinstance(state, dict) else "Unknown")
+    address = state.lead_context.Address_Input if state.lead_context else "Unknown"
     
     factory = CodeComplianceFactory()
     compliance_rules = factory.retrieve_codes(address)

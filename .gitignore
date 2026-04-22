@@ -46,6 +46,3 @@ coverage.xml
 *.cover
 *.sweed
 .pytest_cache/
-
-# Master Control
-config/scale.yaml

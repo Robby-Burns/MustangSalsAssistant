@@ -3,24 +3,51 @@ from typing import Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.factories.llm_factory import get_llm_provider
 from app.factories.geo_logistics_factory import GeoLogisticsFactory
+from app.factories.shopvox_factory import ShopvoxFactory
+from app.models.core import LeadContext
 
 logger = logging.getLogger(__name__)
 
 def liaison_node(state: Any):
-    logger.info("LIAISON: Pulling Lead Context and Geo-Locking.")
+    logger.info(f"LIAISON: Pulling Lead Context for Lead ID: {state.lead_id}")
+    
+    shopvox_factory = ShopvoxFactory()
+    lead_context_data = shopvox_factory.get_lead_context(state.lead_id)
+    
+    lead_context = None
+    is_verified = False
+    
+    if lead_context_data:
+        try:
+            lead_context = LeadContext(**lead_context_data)
+            logger.info(f"Successfully loaded LeadContext for {state.lead_id}")
+            
+            # Geo-Locking
+            address = lead_context.Address_Input if lead_context.Address_Input else "Unknown"
+            geo_lock = GeoLogisticsFactory.geocode_address(address)
+            if geo_lock:
+                is_verified = True
+                logger.info(f"Address '{address}' verified and geo-locked.")
+            else:
+                logger.warning(f"Address '{address}' could not be verified.")
+        except Exception as e:
+            logger.error(f"Failed to parse LeadContext data for {state.lead_id}. Error: {e}")
+            # Halt gracefully if data is malformed
+            # In a real scenario, you might return a specific error card to the user
+            return {"lead_context": None, "address_verified": False, "current_intent": "error_halt"}
+    else:
+        logger.error(f"Could not retrieve LeadContext for Lead ID: {state.lead_id}. Halting workflow.")
+        # Halt gracefully if no lead data is found
+        return {"lead_context": None, "address_verified": False, "current_intent": "error_halt"}
+
+    # Intent Routing
     llm = get_llm_provider()
-    
-    # Intentionally retaining the previous hardcode mapping initially for test isolation
-    geo_lock = GeoLogisticsFactory.geocode_address("123 Main St, Richland, WA")
-    is_verified = True if geo_lock else False
-    
     system_prompt = "You are the Mustang Sage Liaison. Evaluate the intent based on lead context."
     response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=f"Lead ID: {state.lead_id}")])
-    logger.info(f"Liaison LLM: {response.content}")
+    logger.info(f"Liaison LLM response for intent: {response.content}")
     
-    # Evaluate communication intent based on string matching
     intent = ""
-    feedback = state.current_human_feedback if hasattr(state, "current_human_feedback") else state.get("current_human_feedback")
+    feedback = state.get("current_human_feedback")
     if feedback:
         feed_lower = feedback.lower()
         if "intro" in feed_lower:
@@ -34,4 +61,8 @@ def liaison_node(state: Any):
         elif "follow" in feed_lower or "nudge" in feed_lower:
             intent = "follow_up_email"
             
-    return {"address_verified": is_verified, "current_intent": intent}
+    return {
+        "lead_context": lead_context,
+        "address_verified": is_verified, 
+        "current_intent": intent
+    }

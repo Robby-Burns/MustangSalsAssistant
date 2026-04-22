@@ -5,13 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2095ce41-5f47-4cd8-a136-33560028a06b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dummy.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/factories/vector_store_factory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/factories/comm_template_engine.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/skills/code_citer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/skills/price_scrubber.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/scale.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" beforeDir="false" afterPath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/agents/archivist.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/archivist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/agents/auditor.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/auditor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/agents/liaison.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/liaison.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/agents/merchant.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/merchant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/factories/comm_factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/factories/comm_factory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/factories/s3_vector_factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/factories/s3_vector_factory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mustang_whisper_system_prompt.md" beforeDir="false" afterPath="$PROJECT_DIR$/mustang_whisper_system_prompt.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +30,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Robby-Burns"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Robby-Burns/MustangSalsAssistant.git",
+    "accountId": "373d43e1-abab-434c-b193-f1685bd782d0"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -46,7 +67,7 @@
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "master",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/Burns/antigravity/MustangWhisper",
+    "last_opened_file_path": "C:/Users/Burns/PycharmProjects/MustangSalsAssistant",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "to.speed.mode.migration.done": "true"
   }
@@ -54,7 +75,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-f2b7a9f6281b-6e1f45a539f7-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.29346.142" />
+        <option value="bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139" />
       </set>
     </attachedChunks>
   </component>

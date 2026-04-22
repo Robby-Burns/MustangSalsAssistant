@@ -35,7 +35,6 @@ APP_PASSWORD = os.getenv("MICROSOFT_APP_PASSWORD", "PLACEHOLDER_APP_PASSWORD")
 # NOTE: See citation in mustang_whisper_system_prompt.md line 40 for guardrail on secret handling.
 adapter_settings = BotFrameworkAdapterSettings(APP_ID, APP_PASSWORD)
 adapter = BotFrameworkAdapter(adapter_settings)
-adapter = BotFrameworkAdapter(adapter_settings)
 
 # Catch-all for errors
 async def on_error(context, error):

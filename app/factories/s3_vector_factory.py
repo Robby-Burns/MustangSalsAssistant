@@ -16,10 +16,25 @@ class S3VectorFactory:
 
     @classmethod
     def get_recipe_by_id(cls, recipe_id: str):
-        # Placeholder for strict S3 object pulling
-        pass
+        logger.info(f"Mocking S3 object pull for recipe: {recipe_id}")
+        return {
+            "Recipe_ID": recipe_id,
+            "Project_Type": "Monument Sign",
+            "Part_List": [{"SKU": "MONUMENT-8FT", "Qty": 1, "Description": "8ft Monument Base"}],
+            "Labor_Hours": 16,
+            "Zoning_Tags": ["KMC", "monument"],
+            "Source_Bucket": "Sandbox"
+        }
 
     @classmethod
     def list_recent_won(cls):
-        # Placeholder for S3 Listing
-        pass
+        logger.info("Mocking S3 list operation for recent won projects.")
+        return [
+            {"Recipe_ID": "REC-001", "Project_Type": "Pylon Sign"},
+            {"Recipe_ID": "REC-002", "Project_Type": "Channel Letters"}
+        ]
+
+    @classmethod
+    def raw_s3_legacy(cls, query: str):
+        logger.info(f"Mocking raw S3 legacy search for: {query}")
+        return []

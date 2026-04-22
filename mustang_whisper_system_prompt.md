@@ -114,7 +114,7 @@ Every session follows this sequence. Do not skip steps.
 | `ShopvoxFactory` | `get_lead_context()`, `search_products()`, `create_quote_draft()` | shopVOX REST API connector |
 | `S3VectorFactory` | `semantic_search()`, `get_recipe_by_id()`, `list_recent_won()` | Price-stripped recipe index |
 | `GeoLogisticsFactory` | `geocode_address()`, `calculate_distance()`, `lookup_jurisdiction()` | Maps + GIS compliance portals |
-| `CommFactory` | `build_lead_context()`, `draft_email()`, `draft_design_brief()` | CRM-grounded communication drafts |
+| `CommTemplateEngine` | `process_comm_intent()` | CRM-grounded communication drafts |
 
 ### Skills (registered in `/skills/`)
 | Skill | Input | Output |
