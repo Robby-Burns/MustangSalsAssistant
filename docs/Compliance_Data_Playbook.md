@@ -1,15 +1,15 @@
-# Playbook: How to Update Compliance Data
-
-**Version:** 3.0
-**Last Updated:** 2026-04-22
-
-This guide explains how to update the municipal sign code data used by the Mustang Sage bot.
+is guide explains how to update the municipal sign code data used by the Mustang Sage bot.
 
 ## 1. Your Tool: The Central Excel File
 
 All compliance data is managed in a single Excel file stored on the company's shared network drive. This is the **single source of truth**.
 
--   **File Location:** The exact location of this file is configured by your IT team. Please ask your manager for the shortcut to the `compliance_data.xlsx` file.
+-   *# Playbook: How to Update Compliance Data
+
+**Version:** 3.0
+**Last Updated:** 2026-04-22
+
+Th*File Location:** The exact location of this file is configured by your IT team. Please ask your manager for the shortcut to the `compliance_data.xlsx` file.
 -   **Your Role:** As the **Compliance Data Owner**, your responsibility is to keep the content of this file accurate and up-to-date.
 
 ## 2. The Update Process: A Simple Checklist
