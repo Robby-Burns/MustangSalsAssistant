@@ -1,7 +1,17 @@
-from pydantic_settings import BaseSettings
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 import yaml
 import os
+
+class PlatformsConfig(BaseModel):
+    teams_enabled: bool = Field(default=True)
+    slack_enabled: bool = Field(default=False)
+
+class GovernanceConfig(BaseModel):
+    compliance_data_owner: str
+    technical_contact_email: EmailStr
+
+class ComplianceSourceConfig(BaseModel):
+    excel_file_path: str
 
 class ContextManagementConfig(BaseModel):
     max_history_messages: int
@@ -13,6 +23,7 @@ class ContextManagementConfig(BaseModel):
 class OrchestrationConfig(BaseModel):
     engine: str
     max_steps: int
+    agent_workflow_enabled: bool = Field(default=False)
 
 class PrimaryLLMConfig(BaseModel):
     provider: str
@@ -26,20 +37,16 @@ class LLMConfig(BaseModel):
     embedder: EmbedderConfig
 
 class VectorStoreConfig(BaseModel):
-    provider: str = Field(default="neon", description="The vector store provider: 'neon', 'chroma', or 's3'")
-    chroma_persist_directory: str = Field(default="/app/chroma_db", description="Path for chroma DB local storage")
-    collection_name: str = Field(default="project_recipes", description="Collection name for vector store")
+    provider: str = Field(default="neon")
+    chroma_persist_directory: str = Field(default="/app/chroma_db")
+    collection_name: str = Field(default="project_recipes")
     
     def get_chroma_path(self) -> str:
-        """Returns the configured path if it exists as an absolute path (Docker), otherwise falls back to a relative path for local development."""
         if os.path.exists(self.chroma_persist_directory) or self.chroma_persist_directory.startswith("/app"):
-            # Inside docker, or it exists.
             if self.chroma_persist_directory.startswith("/app") and not os.path.exists("/app"):
-                 # We are outside of docker, fallback
                  return os.path.abspath("./chroma_db")
             return self.chroma_persist_directory
         return os.path.abspath("./chroma_db")
-
 
 class DatabaseConfig(BaseModel):
     type: str
@@ -52,10 +59,13 @@ class AuditConfig(BaseModel):
     schedule_timezone: str
     notification_channel: str
     notification_link: str
-    auto_apply: bool  # Must always be False
+    auto_apply: bool
     cve_check_weekly: bool
 
 class AppConfig(BaseModel):
+    platforms: PlatformsConfig
+    governance: GovernanceConfig
+    compliance_source: ComplianceSourceConfig
     context_management: ContextManagementConfig
     orchestration: OrchestrationConfig
     llm: LLMConfig
@@ -72,14 +82,12 @@ class AppConfig(BaseModel):
         
         config = cls(**config_data)
         
-        # Hard safety check: auto_apply must never be True
         if config.audit.auto_apply:
-            raise ValueError(
-                "FATAL: audit.auto_apply is True. "
-                "This is forbidden. Human sign-off is mandatory."
-            )
+            raise ValueError("FATAL: audit.auto_apply is True. Human sign-off is mandatory.")
         
+        if not config.platforms.teams_enabled and not config.platforms.slack_enabled:
+            raise ValueError("FATAL: No bot platforms enabled in config/scale.yaml.")
+
         return config
 
-# Crash immediately if config is broken
 config = AppConfig.load()

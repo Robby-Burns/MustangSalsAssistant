@@ -4,23 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2095ce41-5f47-4cd8-a136-33560028a06b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/factories/comm_template_engine.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/skills/code_citer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/skills/price_scrubber.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/scale.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="2095ce41-5f47-4cd8-a136-33560028a06b" name="Changes" comment="Another Push">
+      <change afterPath="$PROJECT_DIR$/app/ui/block_kit_builder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.bugs_tracker.md" beforeDir="false" afterPath="$PROJECT_DIR$/.bugs_tracker.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.build-context.md" beforeDir="false" afterPath="$PROJECT_DIR$/.build-context.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" beforeDir="false" afterPath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/agents/archivist.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/archivist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/agents/auditor.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/auditor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/agents/liaison.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/liaison.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/agents/merchant.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/agents/merchant.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/factories/comm_factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/factories/comm_factory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/factories/s3_vector_factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/factories/s3_vector_factory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/graph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mustang_whisper_system_prompt.md" beforeDir="false" afterPath="$PROJECT_DIR$/mustang_whisper_system_prompt.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/scale.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/scale.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,18 +25,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Robby-Burns"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Robby-Burns&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Robby-Burns/MustangSalsAssistant.git",
-    "accountId": "373d43e1-abab-434c-b193-f1685bd782d0"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Robby-Burns/MustangSalsAssistant.git&quot;,
+    &quot;accountId&quot;: &quot;373d43e1-abab-434c-b193-f1685bd782d0&quot;
   }
-}]]></component>
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -57,21 +52,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "C:/Users/Burns/PycharmProjects/MustangSalsAssistant",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Burns/PycharmProjects/MustangSalsAssistant&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -87,6 +82,19 @@
       <option name="presentableId" value="Default" />
       <updated>1772483454189</updated>
     </task>
+    <task id="LOCAL-00001" summary="Another Push">
+      <option name="closed" value="true" />
+      <created>1776823594588</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1776823594588</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Another Push" />
+    <option name="LAST_COMMIT_MESSAGE" value="Another Push" />
   </component>
 </project>
