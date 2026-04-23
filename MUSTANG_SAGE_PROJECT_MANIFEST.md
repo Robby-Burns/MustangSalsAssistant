@@ -60,11 +60,27 @@ You are building **The Mustang Sage** — a sales co-pilot for Mustang Sign Comp
 
 ```
 project-root/
-├── mustang_sage_v2_4_0_complete.md      ← THE SYSTEM PROMPT
-├── agent.md                             ← Kernel (read first)
-├── .build-context.md                    ← Project memory (AI reads this)
-├── .bugs_tracker.md                     ← Bug tracking (AI reads this)
-├── MUSTANG_SAGE_PROJECT_MANIFEST.md     ← You are here
+├── app/
+│   ├── agents/
+│   │   ├── liaison.py
+│   │   ├── archivist.py
+│   │   ├── auditor.py
+│   │   └── merchant.py
+│   ├── factories/
+│   │   ├── shopvox_factory.py
+│   │   ├── s3_vector_factory.py
+│   │   ├── geo_logistics_factory.py
+│   │   └── comm_template_engine.py
+│   ├── skills/
+│   │   ├── geo_lock_guard.py
+│   │   ├── distance_calculator.py
+│   │   ├── margin_validator.py
+│   │   ├── code_citer.py
+│   │   ├── comm_template_engine.py
+│   │   └── price_scrubber.py
+│   ├── models/
+│   │   └── core.py
+│   └── main.py
 │
 ├── docs/
 │   ├── AgentSpec.md                     ← Arch spec (generated from discovery)
@@ -109,31 +125,6 @@ project-root/
 ├── config/
 │   ├── scale.yaml                       ← All configuration (AI reads this)
 │   └── mustang_sage_brand_rules.txt     ← Marketing Manager rules
-│
-├── skills/
-│   ├── geo-lock-guard/
-│   │   ├── geo-lock-guard.yaml          ← Skill metadata
-│   │   └── geo-lock-guard.py            ← Implementation
-│   ├── distance-calculator/
-│   ├── margin-validator/
-│   ├── code-citer/
-│   ├── comm-template-engine/
-│   └── price-scrubber/
-│
-├── .agents/
-│   ├── workflows/
-│   │   └── mustang_sage/
-│   │       ├── system_prompt.md         ← Antigravity reads this
-│   │       ├── liaison_agent.py
-│   │       ├── archivist_agent.py
-│   │       ├── auditor_agent.py
-│   │       └── merchant_agent.py
-│   │
-│   └── factories/
-│       ├── shopvox_factory.py
-│       ├── s3_vector_factory.py
-│       ├── geo_logistics_factory.py
-│       └── comm_template_engine.py
 │
 ├── tests/
 │   ├── test_liaison_agent.py

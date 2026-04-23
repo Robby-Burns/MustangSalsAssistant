@@ -1,4 +1,5 @@
 import logging
+from app.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -8,8 +9,9 @@ class MarginValidator:
     """
     @staticmethod
     def validate(margin_decimal: float) -> bool:
-        if margin_decimal < 0.35:
-            logger.error(f"MARGIN ERROR: Proposed margin {margin_decimal*100:.1f}% is below 35% floor.")
+        margin_floor = config.business_rules.margin_floor
+        if margin_decimal < margin_floor:
+            logger.error(f"MARGIN ERROR: Proposed margin {margin_decimal*100:.1f}% is below {margin_floor*100:.0f}% floor.")
             return False
         
         logger.info(f"Margin validated: {margin_decimal*100:.1f}%")

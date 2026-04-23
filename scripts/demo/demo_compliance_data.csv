@@ -1,0 +1,4 @@
+"row_id","Municipality","Rule Name","Key Constraints","Full Text","Source URL","Last Fingerprint","Sync Status","Last Checked","Suggested Change?","Before Text","After Text"
+2,"Kennewick","Demo - Freestanding Sign","Max Height: 10ft; Setback: 5ft","This is a demo rule for Kennewick. The maximum height for a freestanding sign is 10 feet.","https://example.com/kennewick","demo_hash_1","","","No","",""
+3,"Pasco","Demo - Commercial Zone","Max Height: 35ft","This is a demo rule for Pasco. No sign shall be erected to a height greater than 35 feet.","https://example.com/pasco","demo_hash_2","","","No","",""
+4,"Richland","Demo - General Regulations","Must not obstruct traffic view","This is a demo rule for Richland. No sign shall be erected at an intersection in a manner that obstructs vision.","https://example.com/richland","demo_hash_3","","","No","",""

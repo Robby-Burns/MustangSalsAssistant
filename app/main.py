@@ -106,6 +106,17 @@ def read_root():
 def health_check():
     return {"status": "healthy"}
 
+# --- Demo Endpoints ---
+from app.ui.demo_card import DemoCardGenerator
+
+@app.get("/demo/card", tags=["Demo"])
+def get_demo_card():
+    """
+    Returns the JSON for a high-quality, detailed Adaptive Card for demos.
+    You can paste this JSON into the Adaptive Card Designer to visualize it.
+    """
+    return DemoCardGenerator.generate_demo_card()
+
 # ... (The rest of your endpoints remain the same)
 from app.skills.audit_system import run_bi_annual_audit, run_weekly_cve
 audit_api_key_header = APIKeyHeader(name="X-Audit-Key", auto_error=False)

@@ -10,12 +10,17 @@ governance:
   compliance_data_owner: "Jane Doe, Compliance Officer"
   technical_contact_email: "dev-alerts@example.com"
 
+business_rules:
+  # The minimum gross margin percentage required for a project.
+  # Represented as a decimal (e.g., 0.35 for 35%).
+  margin_floor: 0.35
+
 compliance_source:
-  # For local testing, this path points to the file inside the project directory.
-  # This works because of the volume mount in docker-compose.yml.
-  # For production, you would change this to the absolute path of the
-  # file on your shared network drive (e.g., "/mnt/shared/compliance_data.xlsx").
-  excel_file_path: "config/compliance_sources/compliance_data.xlsx"
+  # This path points to the central compliance data file.
+  # For production, this should be an absolute path on a shared network drive.
+  # In "demo" mode (set in .env), this path is automatically overridden
+  # to use 'scripts/demo/demo_compliance_data.xlsx'.
+  excel_file_path: "/path/to/your/shared/network/drive/compliance_data.xlsx"
 
 context_management:
   max_history_messages: 10
@@ -31,6 +36,7 @@ orchestration:
 
 llm:
   primary:
+    # Options: "google", "openai", "anthropic"
     provider: "google"
     model: "gemini-1.5-flash"
   embedder:
@@ -39,6 +45,7 @@ llm:
 database:
   type: "vector"
   vector_store:
+    # Options: "chroma", "neon"
     provider: "chroma"
     collection_name: "project_recipes"
     chroma_persist_directory: "/app/chroma_db"

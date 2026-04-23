@@ -4,7 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2095ce41-5f47-4cd8-a136-33560028a06b" name="Changes" comment="5th Push" />
+    <list default="true" id="2095ce41-5f47-4cd8-a136-33560028a06b" name="Changes" comment="5th Push">
+      <change afterPath="$PROJECT_DIR$/app/ui/demo_card.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/compliance_sources/compliance_data.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/demo/demo_compliance_data.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/demo/seed_demo_database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.build-context.md" beforeDir="false" afterPath="$PROJECT_DIR$/.build-context.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" beforeDir="false" afterPath="$PROJECT_DIR$/MUSTANG_SAGE_PROJECT_MANIFEST.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/factories/shopvox_factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/factories/shopvox_factory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/skills/margin_validator.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/skills/margin_validator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/scale.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/scale.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -118,7 +133,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776898674746</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="5th Push">
+      <option name="closed" value="true" />
+      <created>1776960986305</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1776960986305</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
