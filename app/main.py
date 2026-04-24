@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import sys
 import traceback
 import os
 from fastapi import FastAPI, Request, Response, status, Depends, HTTPException, Security
+from fastapi.responses import HTMLResponse
 from fastapi.security import APIKeyHeader
+from pydantic import BaseModel
 from app.config import config
+from app.demo_runtime import apply_demo_action, create_demo_session, get_demo_session
 from app.graph import sage_graph
 
 # OpenTelemetry imports
@@ -15,6 +20,21 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
 
 app = FastAPI(title="The Mustang Sage")
+
+
+class NudgeRequest(BaseModel):
+    quote_id: str
+
+
+class DemoSessionCreateRequest(BaseModel):
+    lead_id: str
+    overrides: dict = {}
+
+
+class DemoActionRequest(BaseModel):
+    action: str
+    feedback: str = ""
+    payload: dict = {}
 
 # --- Telemetry Configuration ---
 resource = Resource.create({"service.name": "mustang-whisper-api"})
@@ -60,11 +80,24 @@ if config.platforms.teams_enabled:
 
     bot = SageBot()
 
+    def _demo_message_response(message_text: str, thread_id: str):
+        graph_config = {"configurable": {"thread_id": thread_id}}
+        final_state = sage_graph.invoke({"lead_id": message_text}, graph_config)
+        if final_state.get("quote_draft"):
+            return AdaptiveCardGenerator.generate_quote_draft_card(final_state["quote_draft"].model_dump())
+        if final_state.get("comm_draft"):
+            return {"type": "comm_draft", "subject": final_state["comm_draft"].Subject, "body": final_state["comm_draft"].Body}
+        return {"message": "I'm not sure how to handle that request."}
+
     @app.post("/api/messages")
     async def messages(req: Request):
         if "application/json" not in req.headers["Content-Type"]:
             return Response(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
         body = await req.json()
+        if "type" not in body:
+            message_text = body.get("text", "")
+            card = _demo_message_response(message_text, body.get("thread_id", "demo-thread"))
+            return {"ok": True, "content": card}
         activity = Activity().deserialize(body)
         auth_header = req.headers.get("Authorization", "")
         response = await adapter.process(auth_header, activity, bot.on_turn)
@@ -72,7 +105,7 @@ if config.platforms.teams_enabled:
             return Response(content=response.body, status_code=response.status)
         return Response(status_code=status.HTTP_202_ACCEPTED)
 
-if config.platforms.slack_enabled:
+if config.platforms.slack_enabled and os.environ.get("SLACK_BOT_TOKEN") and os.environ.get("SLACK_SIGNING_SECRET"):
     from slack_bolt.async_app import AsyncApp
     from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
     from app.ui.block_kit_builder import BlockKitBuilder
@@ -108,6 +141,7 @@ def health_check():
 
 # --- Demo Endpoints ---
 from app.ui.demo_card import DemoCardGenerator
+from app.ui.demo_page import DemoPageBuilder
 
 @app.get("/demo/card", tags=["Demo"])
 def get_demo_card():
@@ -116,6 +150,28 @@ def get_demo_card():
     You can paste this JSON into the Adaptive Card Designer to visualize it.
     """
     return DemoCardGenerator.generate_demo_card()
+
+@app.get("/demo", response_class=HTMLResponse, tags=["Demo"])
+def get_demo_page():
+    return DemoPageBuilder.render()
+
+@app.post("/demo/api/session", tags=["Demo"])
+def create_demo_api_session(payload: DemoSessionCreateRequest):
+    return create_demo_session(payload.lead_id, payload.overrides)
+
+@app.get("/demo/api/session/{session_id}", tags=["Demo"])
+def get_demo_api_session(session_id: str):
+    return get_demo_session(session_id)
+
+@app.post("/demo/api/session/{session_id}/quote", tags=["Demo"])
+def run_demo_quote(session_id: str):
+    from app.demo_runtime import run_quote_workflow
+
+    return run_quote_workflow(session_id)
+
+@app.post("/demo/api/session/{session_id}/action", tags=["Demo"])
+def run_demo_action(session_id: str, payload: DemoActionRequest):
+    return apply_demo_action(session_id, payload.action, payload.feedback, payload.payload)
 
 # ... (The rest of your endpoints remain the same)
 from app.skills.audit_system import run_bi_annual_audit, run_weekly_cve
@@ -134,10 +190,6 @@ def trigger_audit_run(api_key: str = Depends(verify_audit_key)):
 @app.post("/audit/cve-check")
 def trigger_cve_check(api_key: str = Depends(verify_audit_key)):
     return run_weekly_cve()
-
-from pydantic import BaseModel
-class NudgeRequest(BaseModel):
-    quote_id: str
 
 @app.post("/teams/nudge", tags=["UI Integration"])
 def trigger_teams_nudge(payload: NudgeRequest):

@@ -18,7 +18,7 @@ def get_embedder_provider() -> Embeddings:
     """Agnostic factory returning an active LangChain Embedder."""
     provider = config.llm.embedder.provider.lower()
     
-    if provider == "gemini":
+    if provider in {"gemini", "google"}:
         if not os.getenv("GOOGLE_API_KEY"):
             logger.warning("GOOGLE_API_KEY missing. Returning MockEmbeddings.")
             return MockEmbeddings()

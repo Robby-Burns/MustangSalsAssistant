@@ -23,23 +23,31 @@ def seed_chroma_db_with_demo_data():
     collection_name = config.database.vector_store.collection_name
     embedder = get_embedder_provider()
 
-    # --- Idempotency Step: Delete existing collection ---
-    if os.path.exists(persist_directory):
-        logger.warning(f"Existing ChromaDB collection found at '{persist_directory}'. Deleting it to ensure a clean seed.")
-        try:
-            shutil.rmtree(persist_directory)
-            logger.info("Successfully deleted old collection.")
-        except Exception as e:
-            logger.error(f"Failed to delete existing ChromaDB directory: {e}")
-            return
-    
+    # --- Idempotency Step: Clear existing collection contents without deleting the mount point ---
     os.makedirs(persist_directory, exist_ok=True)
+    existing_entries = os.listdir(persist_directory)
+    if existing_entries:
+        logger.warning(
+            f"Existing ChromaDB collection found at '{persist_directory}'. "
+            "Clearing directory contents to ensure a clean seed."
+        )
+        try:
+            for entry in existing_entries:
+                entry_path = os.path.join(persist_directory, entry)
+                if os.path.isdir(entry_path) and not os.path.islink(entry_path):
+                    shutil.rmtree(entry_path)
+                else:
+                    os.unlink(entry_path)
+            logger.info("Successfully cleared old collection contents.")
+        except Exception as e:
+            logger.error(f"Failed to clear existing ChromaDB directory contents: {e}")
+            return
 
     # --- Define Demo Data ---
     demo_recipes = [
-        ProjectRecipe(Recipe_ID="REC-MONUMENT-001", Project_Type="Monument Sign", Part_List=[{"SKU": "MONUMENT-8FT", "Qty": 1}], Labor_Hours=24, Zoning_Tags=["KMC"], Source_Bucket="Demo"),
-        ProjectRecipe(Recipe_ID="REC-PYLON-002", Project_Type="Pylon Sign", Part_List=[{"SKU": "PYLON-20FT", "Qty": 1}], Labor_Hours=40, Zoning_Tags=["RMC"], Source_Bucket="Demo"),
-        ProjectRecipe(Recipe_ID="REC-CHANNEL-003", Project_Type="Channel Letters", Part_List=[{"SKU": "CHANNEL-LED", "Qty": 10}], Labor_Hours=16, Zoning_Tags=["PMC"], Source_Bucket="Demo"),
+        ProjectRecipe(Recipe_ID="REC-MONUMENT-001", Project_Type="Monument Sign", Part_List=[{"SKU": "MONUMENT-8FT", "Qty": 1}], Labor_Hours=24, Zoning_Tags=["KMC"], Source_Bucket="Sandbox"),
+        ProjectRecipe(Recipe_ID="REC-PYLON-002", Project_Type="Pylon Sign", Part_List=[{"SKU": "PYLON-20FT", "Qty": 1}], Labor_Hours=40, Zoning_Tags=["RMC"], Source_Bucket="Sandbox"),
+        ProjectRecipe(Recipe_ID="REC-CHANNEL-003", Project_Type="Channel Letters", Part_List=[{"SKU": "CHANNEL-LED", "Qty": 10}], Labor_Hours=16, Zoning_Tags=["PMC"], Source_Bucket="Sandbox"),
     ]
 
     documents = [Document(page_content=f"Project Type: {r.Project_Type}", metadata=r.model_dump()) for r in demo_recipes]
@@ -52,7 +60,8 @@ def seed_chroma_db_with_demo_data():
             persist_directory=persist_directory,
             collection_name=collection_name
         )
-        vectorstore.persist()
+        if hasattr(vectorstore, "persist"):
+            vectorstore.persist()
         logger.info("ChromaDB demo data seeding complete and persisted.")
     except Exception as e:
         logger.error(f"Failed to seed ChromaDB with demo data: {e}")

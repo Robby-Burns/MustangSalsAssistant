@@ -74,7 +74,10 @@ builder.add_node("comm", comm_node)
 builder.add_node("human_bridge", human_bridge_node)
 
 def route_liaison_intent(state: SageState):
-    return "comm" if state.current_human_feedback and "email" in state.current_human_feedback.lower() else "archivist"
+    feedback = state.current_human_feedback.lower() if state.current_human_feedback else ""
+    if any(kw in feedback for kw in ["email", "follow-up", "nudge", "send follow-up"]):
+        return "comm"
+    return "archivist"
 
 builder.add_edge(START, "liaison")
 builder.add_conditional_edges("liaison", route_liaison_intent, {"comm": "comm", "archivist": "archivist"})

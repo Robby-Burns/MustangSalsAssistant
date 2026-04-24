@@ -1,2 +1,2 @@
-# This file is deprecated and has been replaced by excel_data_provider.py.
-# It should be deleted.
+# DEPRECATED: Data Provider Factory removed during Round 3 Iterative Build audit.
+# See Finding #10 in the Checker Team report.

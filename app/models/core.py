@@ -19,7 +19,7 @@ class ProjectRecipe(BaseModel):
     Part_List: List[Dict[str, Any]]
     Labor_Hours: int
     Zoning_Tags: List[str]
-    Source_Bucket: Literal["Sandbox", "Legacy"]
+    Source_Bucket: Literal["Sandbox", "Legacy", "s3"]
 
 class ComplianceRule(BaseModel):
     Jurisdiction: Literal["KMC", "RMC", "PMC"]

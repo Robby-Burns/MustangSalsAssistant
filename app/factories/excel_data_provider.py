@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class ExcelDataProvider:
     """
-    A robust provider for reading and writing compliance data to a central Excel file
-    stored on a shared network drive.
+    A provider for reading and writing compliance data from the configured source.
+    In production this is typically Excel; in demo mode it may be CSV.
     """
 
     @staticmethod
@@ -29,10 +29,13 @@ class ExcelDataProvider:
 
     @staticmethod
     def get_data() -> list:
-        """Reads all data from the Excel file."""
+        """Reads all data from the configured compliance data file."""
         path = ExcelDataProvider._get_file_path()
         try:
-            df = pd.read_excel(path, sheet_name="ComplianceData")
+            if path.lower().endswith(".csv"):
+                df = pd.read_csv(path)
+            else:
+                df = pd.read_excel(path, sheet_name="ComplianceData")
             if 'row_id' not in df.columns:
                 df['row_id'] = range(2, len(df) + 2)
             return df.to_dict('records')
@@ -42,10 +45,13 @@ class ExcelDataProvider:
 
     @staticmethod
     def update_rows(updates: list):
-        """Atomically updates multiple rows in the Excel file."""
+        """Atomically updates multiple rows in the configured compliance data file."""
         path = ExcelDataProvider._get_file_path()
         try:
-            df = pd.read_excel(path, sheet_name="ComplianceData")
+            if path.lower().endswith(".csv"):
+                df = pd.read_csv(path)
+            else:
+                df = pd.read_excel(path, sheet_name="ComplianceData")
             if 'row_id' not in df.columns:
                 df['row_id'] = range(2, len(df) + 2)
             
@@ -59,8 +65,11 @@ class ExcelDataProvider:
             
             df.reset_index(inplace=True)
             
-            with pd.ExcelWriter(path, engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name='ComplianceData', index=False)
+            if path.lower().endswith(".csv"):
+                df.to_csv(path, index=False)
+            else:
+                with pd.ExcelWriter(path, engine='openpyxl') as writer:
+                    df.to_excel(writer, sheet_name='ComplianceData', index=False)
 
             logger.info(f"Successfully updated {len(updates)} rows in {path}")
 

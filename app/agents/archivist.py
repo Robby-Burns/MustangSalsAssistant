@@ -26,8 +26,14 @@ def archivist_node(state: Any):
     if search_results and 'id' in search_results[0]:
         recipe_id = search_results[0]['id']
         logger.info(f"ARCHIVIST: Semantic search found recipe ID: {recipe_id}. Fetching full recipe.")
-        # In a real S3 implementation, this would fetch the full object. Here we mock it.
-        recipe_data = {"Recipe_ID": recipe_id, "Project_Type": search_results[0].get('project_type'), "Part_List": [], "Labor_Hours": 0, "Zoning_Tags": [], "Source_Bucket": "s3"}
+        recipe_data = {
+            "Recipe_ID": recipe_id,
+            "Project_Type": search_results[0].get("project_type", "Custom Sign"),
+            "Part_List": search_results[0].get("part_list", []),
+            "Labor_Hours": search_results[0].get("labor_hours", 0),
+            "Zoning_Tags": search_results[0].get("zoning_tags", []),
+            "Source_Bucket": search_results[0].get("source_bucket", "Sandbox"),
+        }
         if recipe_data:
             project_recipe = ProjectRecipe(**recipe_data)
             recipe_found = True

@@ -11,8 +11,26 @@ class RateLimitExceededException(Exception):
 
 # --- Mock Data for Demo Mode ---
 _MOCK_LEADS = {
-    "LD-123": {"Lead_ID": "LD-123", "Contact_Name": "John Smith", "Company": "Acme Corp", "Project_Type": "Monument Sign", "Address_Input": "123 Main St, Kennewick, WA"},
-    "LD-456": {"Lead_ID": "LD-456", "Contact_Name": "Jane Doe", "Company": "Pylon Inc.", "Project_Type": "Pylon Sign", "Address_Input": "456 Industrial Way, Richland, WA"},
+    "LD-123": {
+        "Lead_ID": "LD-123", 
+        "Contact_Name": "John Smith", 
+        "Company": "Acme Corp", 
+        "Project_Type": "Monument Sign", 
+        "Address_Input": "123 Main St, Kennewick, WA",
+        "Pipeline_Stage": "Discovery",
+        "Last_Activity_Date": "2026-04-20T10:00:00",
+        "Open_Notes": "Customer wants a backlit monument sign."
+    },
+    "LD-456": {
+        "Lead_ID": "LD-456", 
+        "Contact_Name": "Jane Doe", 
+        "Company": "Pylon Inc.", 
+        "Project_Type": "Pylon Sign", 
+        "Address_Input": "456 Industrial Way, Richland, WA",
+        "Pipeline_Stage": "Quoting",
+        "Last_Activity_Date": "2026-04-21T14:30:00",
+        "Open_Notes": "Interested in a 20ft pylon."
+    },
 }
 _MOCK_PRODUCTS = {
     "monument sign": [{"sku": "MONUMENT-8FT", "price": 4500.0}],
@@ -34,13 +52,31 @@ class ShopvoxFactory:
         self._min_interval = 1.05
 
     def _block_until_ready(self):
-        pass
+        with self._lock:
+            now = time.time()
+            elapsed = now - self._last_call_time
+            wait_time = self._min_interval - elapsed
+            if wait_time > 0:
+                time.sleep(wait_time)
+            self._last_call_time = time.time()
 
     def get_lead_context(self, lead_id: str):
         self._block_until_ready()
         if self._is_demo_mode:
             logger.info(f"DEMO MODE: Pulling mock lead context for '{lead_id}'")
-            return _MOCK_LEADS.get(lead_id.upper(), {"Lead_ID": lead_id, "Company": "Unknown Lead"})
+            return _MOCK_LEADS.get(
+                lead_id.upper(),
+                {
+                    "Lead_ID": lead_id,
+                    "Contact_Name": "Demo Customer",
+                    "Company": "Unknown Lead",
+                    "Project_Type": "Monument Sign",
+                    "Address_Input": "123 Main St, Kennewick, WA",
+                    "Pipeline_Stage": "Discovery",
+                    "Last_Activity_Date": "2026-04-20T10:00:00",
+                    "Open_Notes": "Demo fallback lead context.",
+                },
+            )
         # Real API call logic...
         pass
 

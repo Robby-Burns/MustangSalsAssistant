@@ -27,6 +27,7 @@ def liaison_node(state: Any):
             geo_lock = GeoLogisticsFactory.geocode_address(address)
             if geo_lock:
                 is_verified = True
+                lead_context.Address_Geo_Lock = geo_lock
                 logger.info(f"Address '{address}' verified and geo-locked.")
             else:
                 logger.warning(f"Address '{address}' could not be verified.")
@@ -47,7 +48,8 @@ def liaison_node(state: Any):
     logger.info(f"Liaison LLM response for intent: {response.content}")
     
     intent = ""
-    feedback = state.get("current_human_feedback")
+    # Use getattr for safety or direct access if state is guaranteed to be SageState
+    feedback = getattr(state, "current_human_feedback", None)
     if feedback:
         feed_lower = feedback.lower()
         if "intro" in feed_lower:
@@ -58,7 +60,7 @@ def liaison_node(state: Any):
             intent = "install_schedule"
         elif "brief" in feed_lower:
             intent = "design_brief"
-        elif "follow" in feed_lower or "nudge" in feed_lower:
+        elif any(kw in feed_lower for kw in ["follow", "nudge", "send follow-up"]):
             intent = "follow_up_email"
             
     return {

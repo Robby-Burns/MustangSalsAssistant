@@ -31,10 +31,10 @@ class BlockKitBuilder:
     @staticmethod
     def generate_quote_draft_card(quote_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Creates a Quote Draft Block Kit UI."""
-        project_name = quote_data.get('project_name', 'Unknown')
-        margin_pct = quote_data.get('gross_margin_pct', 0.0) * 100
-        travel_sku = quote_data.get('travel_sku', 'N/A')
-        quote_id = quote_data.get('quote_id')
+        project_name = quote_data.get("Project_Name", quote_data.get("project_name", "Unknown"))
+        margin_pct = quote_data.get("Gross_Margin_Pct", quote_data.get("gross_margin_pct", 0.0)) * 100
+        travel_sku = quote_data.get("Travel_SKU", quote_data.get("travel_sku", "N/A"))
+        quote_id = quote_data.get("Quote_ID", quote_data.get("quote_id"))
 
         blocks = [
             BlockKitBuilder._create_header(f"📋 Quote Draft: {project_name}"),
