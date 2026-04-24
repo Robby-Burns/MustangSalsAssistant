@@ -14,6 +14,14 @@ class GeoLogisticsFactory:
     @classmethod
     @retry(wait=wait_exponential(min=1, max=10), stop=stop_after_attempt(3))
     def geocode_address(cls, address: str) -> dict:
+        if not address or not address.strip():
+            logger.warning("Geocoding skipped because no address was provided.")
+            return None
+
+        if os.getenv("APP_MODE", "production").lower() == "demo":
+            logger.info("APP_MODE=demo. Using Mock Geo-spatial Sandbox for geocoding.")
+            return cls._mock_geocoder(address)
+
         api_key = os.getenv("GOOGLE_MAPS_API_KEY")
         
         # Hardy fallback mechanism for testing or omitted credentials
@@ -31,8 +39,11 @@ class GeoLogisticsFactory:
                 location = data["results"][0]["geometry"]["location"]
                 return {"lat": location["lat"], "lng": location["lng"]}
             else:
-                logger.error(f"Geocoding API returned non-OK status: {data['status']}")
-                return None
+                logger.error(
+                    "Geocoding API returned non-OK status: %s. Falling back to Mock Geo-spatial Sandbox.",
+                    data["status"],
+                )
+                return cls._mock_geocoder(address)
         except Exception as e:
             logger.error(f"Geocoding Exception: {e}")
             # Do not throw, return safe boundary limits

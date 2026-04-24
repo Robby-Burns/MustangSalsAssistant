@@ -639,35 +639,20 @@ class DemoPageBuilder:
     <aside class="queue-pane">
       <div class="pane-header">
         <h1>Mustang Sage</h1>
-        <p>Sales quoting workspace styled as a Teams conversation with live retrieved context and editable draft state.</p>
+        <p>Queue-first quoting workspace with one composer for new requests and revisions.</p>
       </div>
       <div class="queue-body">
-        <section class="quick-create">
-          <div class="mini-label">Start From Lead</div>
-          <div class="field-grid single" style="margin-top:10px;">
-            <label class="field">
-              Lead ID
-              <input id="newLeadId" type="text" value="LD-123" />
-            </label>
-            <label class="field">
-              Request Notes
-              <textarea id="newLeadNotes" placeholder="Customer needs a double-sided illuminated monument sign with updated address details."></textarea>
-            </label>
+        <section class="queue-card">
+          <div class="section-actions">
+            <button class="toolbar-button primary" onclick="newQuote()">New Quote</button>
           </div>
-          <div class="section-actions" style="margin-top:12px;">
-            <button class="toolbar-button primary" onclick="createOrSwitchSession()">Open Workspace</button>
-            <button class="toolbar-button subtle" onclick="seedBlankOpportunity()">New Opportunity</button>
-          </div>
+          <div class="mini-label" style="margin-top:12px;">Queue Status</div>
+          <div class="muted" id="queueStatusLine" style="margin-top:8px;">No workspaces yet.</div>
         </section>
 
         <section class="queue-card">
           <div class="mini-label">Active Queue</div>
           <div class="queue-list" id="queueList" style="margin-top:12px;"></div>
-        </section>
-
-        <section class="queue-card">
-          <div class="mini-label">Source Provenance</div>
-          <div class="source-list" id="sourceContext" style="margin-top:12px;"></div>
         </section>
       </div>
     </aside>
@@ -675,28 +660,23 @@ class DemoPageBuilder:
     <main class="chat-pane">
       <div class="chat-header">
         <div class="chat-title">
-          <h2 id="conversationTitle">Quote Review</h2>
+          <h2 id="conversationTitle">Draft Quote</h2>
           <div class="badge" id="statusBadge">No session</div>
         </div>
-        <div class="toolbar">
-          <button class="toolbar-button primary" onclick="runQuote()">Run Quote</button>
-          <button class="toolbar-button" onclick="saveLead()">Save Lead</button>
-          <button class="toolbar-button" onclick="regenerateQuote()">Manual Regenerate</button>
-          <button class="toolbar-button" onclick="prepareEmail()">Prepare Email</button>
-          <button class="toolbar-button" onclick="toggleDebug()">Toggle Debug</button>
-        </div>
+        <p id="composerHint">Fill the customer details on the right, then describe what the customer wants below.</p>
+        <p id="uiMessage" class="muted"></p>
       </div>
 
       <div class="chat-body">
         <div class="timeline" id="timeline"></div>
         <div class="composer">
-          <div class="mini-label">Rep Request Notes</div>
-          <textarea id="repNote" placeholder="Example: Keep monument footprint under city limits, switch to Richland site, add customer logo panel, and tighten timeline."></textarea>
+          <div class="mini-label">Quote Request</div>
+          <textarea id="repNote" placeholder="Example: Customer wants a double-sided illuminated monument sign with a logo panel, install next month, and a tighter budget."></textarea>
           <div class="section-actions">
-            <button class="toolbar-button" onclick="appendRepNote()">Add Note To Thread</button>
-            <button class="toolbar-button" onclick="requestChanges()">Request Changes</button>
+            <button class="toolbar-button primary" onclick="draftQuote()">Draft Quote</button>
+            <button class="toolbar-button" onclick="saveLead()">Save Details</button>
             <button class="toolbar-button" onclick="approveQuote()">Approve Quote</button>
-            <button class="toolbar-button" onclick="dismissCard()">Dismiss Current Card</button>
+            <button class="toolbar-button" onclick="toggleDebug()">Toggle Debug</button>
           </div>
         </div>
       </div>
@@ -716,15 +696,12 @@ class DemoPageBuilder:
         </div>
 
         <section class="detail-section active" id="tab-details">
-          <div class="mini-label">Lead Intake</div>
+          <div class="mini-label">Customer Details</div>
+          <div id="detailAlerts"></div>
           <div class="field-grid">
             <label class="field">
               Lead ID
               <input id="leadId" type="text" />
-            </label>
-            <label class="field">
-              Pipeline Stage
-              <input id="pipelineStage" type="text" />
             </label>
             <label class="field">
               Company
@@ -735,29 +712,21 @@ class DemoPageBuilder:
               <input id="contactName" type="text" />
             </label>
             <label class="field">
-              Project Type
-              <select id="projectType">
-                <option>Monument Sign</option>
-                <option>Pylon Sign</option>
-                <option>Channel Letters</option>
-              </select>
+              Quote ID
+              <input id="quoteIdStub" type="text" disabled />
             </label>
             <label class="field">
-              Last Activity
-              <input id="lastActivity" type="text" />
+              Project Type
+              <input id="projectTypeDisplay" type="text" disabled />
             </label>
             <label class="field full">
               Site Address
               <input id="addressInput" type="text" />
             </label>
-            <label class="field full">
-              Open Notes
-              <textarea id="openNotes"></textarea>
-            </label>
           </div>
           <div class="source-badges" id="detailFieldSources"></div>
           <div class="section-actions">
-            <button class="toolbar-button primary" onclick="saveLead()">Save Lead Context</button>
+            <button class="toolbar-button primary" onclick="saveLead()">Save Customer Details</button>
           </div>
         </section>
 
@@ -819,7 +788,6 @@ class DemoPageBuilder:
             </label>
           </div>
           <div class="section-actions">
-            <button class="toolbar-button" onclick="prepareEmail()">Generate Draft</button>
             <button class="toolbar-button" onclick="saveEmail()">Save Draft</button>
             <button class="toolbar-button primary" onclick="confirmSend()">Preview, Edit, Confirm Send</button>
           </div>
@@ -841,17 +809,16 @@ class DemoPageBuilder:
     let currentTab = "details";
 
     async function createOrSwitchSession(overrides = {}) {
-      const leadId = document.getElementById("newLeadId").value.trim() || "LD-123";
-      const requestNotes = document.getElementById("newLeadNotes").value.trim();
+      const leadId = overrides.Lead_ID || overrides.lead_id || "LD-NEW";
       const payload = {
         lead_id: leadId,
         overrides: Object.assign({
           Lead_ID: leadId,
-          Open_Notes: requestNotes || "Demo workspace initialized.",
-          Company: overrides.Company || undefined,
-          Contact_Name: overrides.Contact_Name || undefined,
-          Project_Type: overrides.Project_Type || undefined,
-          Address_Input: overrides.Address_Input || undefined
+          Company: overrides.Company || "",
+          Contact_Name: overrides.Contact_Name || "",
+          Project_Type: overrides.Project_Type || "",
+          Address_Input: overrides.Address_Input || "",
+          Pipeline_Stage: overrides.Pipeline_Stage || "Draft"
         }, overrides)
       };
       const response = await fetch("/demo/api/session", {
@@ -860,29 +827,34 @@ class DemoPageBuilder:
         body: JSON.stringify(payload)
       });
       session = await response.json();
-      if (requestNotes) {
-        await postAction("append_note", requestNotes);
-      }
       renderSession();
+      focusComposer();
     }
 
-    function seedBlankOpportunity() {
-      document.getElementById("newLeadId").value = "LD-NEW";
-      document.getElementById("newLeadNotes").value = "New customer request started from scratch.";
+    function newQuote() {
       createOrSwitchSession({
-        Company: "New Opportunity",
-        Contact_Name: "Prospect",
-        Project_Type: "Monument Sign",
-        Address_Input: "123 Main St, Kennewick, WA"
+        Lead_ID: `LD-${Date.now().toString().slice(-6)}`,
+        Company: "",
+        Contact_Name: "",
+        Project_Type: "",
+        Address_Input: ""
       });
     }
 
-    async function runQuote() {
-      await ensureSession();
-      const response = await fetch(`/demo/api/session/${session.session_id}/quote`, { method: "POST" });
-      session = await response.json();
-      renderSession();
-      showTab("quote");
+    async function draftQuote(mode = "") {
+      try {
+        await ensureSession();
+        await saveLead(false);
+        session = await postAction("submit_request", value("repNote"), { mode });
+        if (mode || !session.pending_request_choice) {
+          document.getElementById("repNote").value = "";
+        }
+        renderSession();
+        if (session.quote_draft) showTab("quote");
+      } catch (error) {
+        console.error(error);
+        setStatus("Draft Quote failed. Open debug and check the session/API response.");
+      }
     }
 
     async function regenerateQuote() {
@@ -892,23 +864,19 @@ class DemoPageBuilder:
       showTab("quote");
     }
 
-    async function saveLead() {
+    async function saveLead(showMessage = true) {
       await ensureSession();
       const payload = {
         lead_context: {
           Lead_ID: value("leadId"),
-          Pipeline_Stage: value("pipelineStage"),
           Company: value("company"),
           Contact_Name: value("contactName"),
-          Project_Type: value("projectType"),
-          Last_Activity_Date: value("lastActivity"),
-          Address_Input: value("addressInput"),
-          Open_Notes: value("openNotes")
+          Address_Input: value("addressInput")
         }
       };
       session = await postAction("save_lead", "", payload);
       renderSession();
-      setStatus("Lead context saved");
+      if (showMessage) setStatus("Customer details saved");
     }
 
     async function saveQuote() {
@@ -936,17 +904,6 @@ class DemoPageBuilder:
       setStatus("Code review saved");
     }
 
-    async function prepareEmail() {
-      await ensureSession();
-      if (!session.quote_draft || session.quote_draft.Status !== "approved_pending_submission") {
-        setStatus("Approve the quote before preparing the email");
-        return;
-      }
-      session = await postAction("trigger_nudge");
-      renderSession();
-      showTab("email");
-    }
-
     async function saveEmail() {
       await ensureSession();
       const payload = {
@@ -969,35 +926,16 @@ class DemoPageBuilder:
       setStatus("Email sent in demo mode");
     }
 
-    async function appendRepNote() {
-      await ensureSession();
-      const note = value("repNote");
-      if (!note) return;
-      session = await postAction("append_note", note);
-      document.getElementById("repNote").value = "";
-      renderSession();
-    }
-
-    async function requestChanges() {
-      await ensureSession();
-      const note = value("repNote");
-      session = await postAction("request_changes", note);
-      renderSession();
-      showTab("quote");
-    }
-
     async function approveQuote() {
       await ensureSession();
+      if (!session.quote_draft) {
+        setStatus("Draft a quote first");
+        return;
+      }
       session = await postAction("approve_quote");
       renderSession();
       showTab("email");
       setStatus("Quote approved");
-    }
-
-    async function dismissCard() {
-      await ensureSession();
-      session = await postAction("dismiss");
-      renderSession();
     }
 
     async function postAction(action, feedback = "", payload = {}) {
@@ -1006,6 +944,10 @@ class DemoPageBuilder:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, feedback, payload })
       });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Action ${action} failed: ${response.status} ${errorText}`);
+      }
       return await response.json();
     }
 
@@ -1018,83 +960,89 @@ class DemoPageBuilder:
     function renderSession() {
       if (!session) return;
       document.getElementById("conversationTitle").textContent =
-        `${session.lead_context.Company || "Workspace"} | ${session.lead_context.Project_Type || "Quote"}`;
+        `${session.lead_context.Company || "New Quote"} | ${session.lead_context.Project_Type || "Quote"}`;
       document.getElementById("statusBadge").textContent =
-        `${session.send_status || "draft"} | ${session.quote_draft ? session.quote_draft.Status : "no quote"}`;
+        `${session.queue_status || "Draft"} | ${session.quote_draft ? session.quote_draft.Quote_ID : "no quote"}`;
+      document.getElementById("composerHint").textContent =
+        session.pending_request_choice
+          ? "Choose whether to update the current draft or create a new one."
+          : "Fill the customer details on the right, then describe what the customer wants below.";
+      document.getElementById("uiMessage").textContent = "";
       renderQueue();
-      renderSourceContext();
       renderTimeline();
       hydrateLeadFields();
       hydrateQuoteFields();
       hydrateCodeReview();
       hydrateEmailDraft();
       renderFieldSources();
+      renderDetailAlerts();
       document.getElementById("sessionDump").textContent = JSON.stringify(session, null, 2);
     }
 
     function renderQueue() {
       const root = document.getElementById("queueList");
-      const leads = session.available_leads || [];
-      root.innerHTML = leads.map(lead => {
-        const active = session && session.lead_context && session.lead_context.Lead_ID === lead.lead_id ? "active" : "";
+      const items = session.queue || [];
+      const counts = {};
+      items.forEach(item => counts[item.status] = (counts[item.status] || 0) + 1);
+      document.getElementById("queueStatusLine").textContent =
+        items.length
+          ? Object.entries(counts).map(([status, count]) => `${status}: ${count}`).join(" | ")
+          : "No active workspaces.";
+      root.innerHTML = items.map(item => {
+        const active = session && session.session_id === item.session_id ? "active" : "";
         return `
-          <button class="queue-item ${active}" onclick="loadQueueLead('${escapeJs(lead.lead_id)}', '${escapeJs(lead.company)}', '${escapeJs(lead.project_type)}', '${escapeJs(lead.address)}', '${escapeJs(lead.contact_name)}')">
-            <strong>${escapeHtml(lead.lead_id)}</strong>
-            <span>${escapeHtml(lead.company)} | ${escapeHtml(lead.project_type)}</span>
+          <button class="queue-item ${active}" onclick="switchSession('${escapeJs(item.session_id)}')">
+            <strong>${escapeHtml(item.quote_id || item.lead_id)}</strong>
+            <span>${escapeHtml(item.company || "New Opportunity")} | ${escapeHtml(item.project_type || "Quote")}</span>
             <div class="badge-row">
-              <span class="badge">${escapeHtml(lead.address)}</span>
+              <span class="badge">${escapeHtml(item.status)}</span>
             </div>
           </button>`;
-      }).join("");
-    }
-
-    function loadQueueLead(leadId, company, projectType, address, contactName) {
-      document.getElementById("newLeadId").value = leadId;
-      document.getElementById("newLeadNotes").value = `Load ${projectType.toLowerCase()} request for ${company}.`;
-      createOrSwitchSession({
-        Company: company,
-        Contact_Name: contactName,
-        Project_Type: projectType,
-        Address_Input: address
-      });
-    }
-
-    function renderSourceContext() {
-      const root = document.getElementById("sourceContext");
-      const items = session.source_context || [];
-      if (!items.length) {
-        root.innerHTML = `<div class="empty-state">No retrieved sources yet. Run the quote to load recipe, compliance, and quote provenance.</div>`;
-        return;
-      }
-      root.innerHTML = items.map(item => `
-        <div class="source-row">
-          <div>
-            <strong>${escapeHtml(item.label)}</strong>
-            <div class="muted">${escapeHtml(item.source)}</div>
-          </div>
-          <div class="source-tag ${statusClass(item.status)}">${escapeHtml(item.status)} | ${escapeHtml(shortTime(item.timestamp))}</div>
-        </div>
-      `).join("");
+      }).join("") || `<div class="empty-state">Start a new quote to create a workspace.</div>`;
     }
 
     function renderTimeline() {
       const root = document.getElementById("timeline");
       const items = [];
+      if (session.current_view && session.current_view.kind === "intent_choice") items.push({ type: "choice", payload: session.current_view.payload });
       (session.messages || []).forEach(msg => items.push({ type: "message", payload: msg }));
       if (session.quote_draft) items.push({ type: "quote", payload: session.quote_draft });
       if (session.compliance_rules && session.compliance_rules.length) items.push({ type: "codes", payload: session.compliance_rules });
       if (session.comm_draft) items.push({ type: "email", payload: session.comm_draft });
+      if (session.workflow_alert) items.push({ type: "notice", payload: session.workflow_alert });
       if (session.current_view && session.current_view.kind === "sent") items.push({ type: "sent", payload: session.current_view.payload });
 
       root.innerHTML = items.map(item => {
+        if (item.type === "choice") return renderIntentChoice(item.payload);
         if (item.type === "message") return renderMessage(item.payload);
         if (item.type === "quote") return renderQuoteCard(item.payload);
         if (item.type === "codes") return renderComplianceCard(item.payload);
         if (item.type === "email") return renderEmailCard(item.payload);
+        if (item.type === "notice") return renderNoticeCard(item.payload, item.payload.title || "Quote Status");
         if (item.type === "sent") return renderNoticeCard(item.payload, "Customer email sent");
         return "";
       }).join("");
       root.scrollTop = root.scrollHeight;
+    }
+
+    function renderIntentChoice(payload) {
+      return `
+        <div class="message">
+          <div class="message-meta">sage | ${escapeHtml(shortTime(nowIso()))}</div>
+          <div class="notice-card">
+            <div class="card-hero">
+              <h3>${escapeHtml(payload.title || "Choose next step")}</h3>
+              <p>${escapeHtml(payload.body || "")}</p>
+            </div>
+            <div class="card-section">
+              <div class="section-actions">
+                <button class="toolbar-button primary" onclick="resolvePendingRequest('update_existing')">Update Current Draft</button>
+                <button class="toolbar-button" onclick="resolvePendingRequest('create_new')">Create New Draft</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function renderMessage(message) {
@@ -1257,13 +1205,11 @@ class DemoPageBuilder:
     function hydrateLeadFields() {
       const lead = session.lead_context || {};
       setValue("leadId", lead.Lead_ID || "");
-      setValue("pipelineStage", lead.Pipeline_Stage || "");
       setValue("company", lead.Company || "");
       setValue("contactName", lead.Contact_Name || "");
-      setValue("projectType", lead.Project_Type || "Monument Sign");
-      setValue("lastActivity", lead.Last_Activity_Date || "");
+      setValue("quoteIdStub", session.quote_draft ? session.quote_draft.Quote_ID : draftQuoteIdStub(lead.Company));
+      setValue("projectTypeDisplay", lead.Project_Type || "Inferred from request");
       setValue("addressInput", lead.Address_Input || "");
-      setValue("openNotes", lead.Open_Notes || "");
     }
 
     function hydrateQuoteFields() {
@@ -1282,7 +1228,7 @@ class DemoPageBuilder:
       const review = session.code_review || [];
       const rules = session.compliance_rules || [];
       if (!rules.length) {
-        root.innerHTML = `<div class="empty-state">Run the quote workflow to load jurisdiction rules.</div>`;
+        root.innerHTML = `<div class="empty-state">Draft the quote to load jurisdiction rules.</div>`;
         return;
       }
       root.innerHTML = rules.map((rule, index) => {
@@ -1315,10 +1261,25 @@ class DemoPageBuilder:
       setValue("emailBody", email.Body || "");
     }
 
+    function renderDetailAlerts() {
+      const root = document.getElementById("detailAlerts");
+      const alert = session.workflow_alert || null;
+      if (!alert) {
+        root.innerHTML = "";
+        return;
+      }
+      root.innerHTML = `
+        <div class="empty-state" style="border-style:solid; border-color:#f0d38a; background:#fff8e6;">
+          <strong>${escapeHtml(alert.title || "More details needed")}</strong>
+          <div style="margin-top:6px;">${escapeHtml(alert.body || "")}</div>
+        </div>
+      `;
+    }
+
     function renderFieldSources() {
       const root = document.getElementById("detailFieldSources");
       const fields = session.field_sources || {};
-      const keys = ["Company", "Contact_Name", "Project_Type", "Last_Activity_Date", "Address_Input", "Open_Notes", "Quote", "Compliance", "Email"];
+      const keys = ["Company", "Contact_Name", "Project_Type", "Address_Input", "Quote", "Compliance", "Email"];
       root.innerHTML = keys.filter(key => fields[key]).map(key => {
         const item = fields[key];
         return `<span class="source-tag ${statusClass(item.status)}">${escapeHtml(key)} | ${escapeHtml(item.status)} | ${escapeHtml(shortTime(item.timestamp))}</span>`;
@@ -1441,11 +1402,57 @@ class DemoPageBuilder:
     }
 
     function setStatus(text) {
-      document.getElementById("statusBadge").textContent = text;
+      document.getElementById("uiMessage").textContent = text;
     }
 
     function nowIso() {
       return new Date().toISOString();
+    }
+
+    async function switchSession(sessionId) {
+      const response = await fetch(`/demo/api/session/${sessionId}`);
+      session = await response.json();
+      renderSession();
+      focusComposer();
+    }
+
+    async function resolvePendingRequest(mode) {
+      const pending = session && session.pending_request_choice ? session.pending_request_choice.request : "";
+      if (!pending) {
+        setStatus("No pending request to resolve.");
+        return;
+      }
+      try {
+        session = await postAction("submit_request", pending, { mode });
+        document.getElementById("repNote").value = "";
+        renderSession();
+        if (session.quote_draft) showTab("quote");
+      } catch (error) {
+        console.error(error);
+        setStatus("Draft Quote failed. Open debug and check the session/API response.");
+      }
+    }
+
+    function draftQuoteIdStub(company) {
+      const value = String(company || "QUOTE").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) || "QUOTE";
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const year = now.getFullYear();
+      return `${value}-1-${month}-${year}`;
+    }
+
+    function focusComposer() {
+      const composer = document.getElementById("repNote");
+      if (composer) composer.focus();
+    }
+
+    function bindFieldPreviews() {
+      const companyField = document.getElementById("company");
+      if (!companyField) return;
+      companyField.addEventListener("input", () => {
+        if (!session || (session.quote_draft && session.quote_draft.Quote_ID)) return;
+        setValue("quoteIdStub", draftQuoteIdStub(companyField.value));
+      });
     }
 
     function shortTime(value) {
@@ -1471,6 +1478,7 @@ class DemoPageBuilder:
     }
 
     showTab("details");
+    bindFieldPreviews();
     createOrSwitchSession();
   </script>
 </body>

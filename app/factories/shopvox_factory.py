@@ -68,13 +68,13 @@ class ShopvoxFactory:
                 lead_id.upper(),
                 {
                     "Lead_ID": lead_id,
-                    "Contact_Name": "Demo Customer",
-                    "Company": "Unknown Lead",
-                    "Project_Type": "Monument Sign",
-                    "Address_Input": "123 Main St, Kennewick, WA",
-                    "Pipeline_Stage": "Discovery",
+                    "Contact_Name": "",
+                    "Company": "",
+                    "Project_Type": "",
+                    "Address_Input": "",
+                    "Pipeline_Stage": "Draft",
                     "Last_Activity_Date": "2026-04-20T10:00:00",
-                    "Open_Notes": "Demo fallback lead context.",
+                    "Open_Notes": "",
                 },
             )
         # Real API call logic...
